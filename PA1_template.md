@@ -1,13 +1,9 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 unzip("activity.zip")
 activity <- read.csv("activity.csv")
 ```
@@ -18,38 +14,69 @@ activity <- read.csv("activity.csv")
 2. Make a histogram from the data
 3. rmean is the mean  and rmedian is the median of the number of steps
 
-```{r}
+
+```r
 steps.date <- aggregate(steps ~ date, data = activity, FUN = sum)
 barplot(steps.date$steps, names.arg = steps.date$date, xlab = "date", ylab = "steps")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
 rmean <- mean(steps.date$steps)
 rmedian <- median(steps.date$steps)
 rmean
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 rmedian
+```
+
+```
+## [1] 10765
 ```
 
 
 ## What is the average daily activity pattern?
 1. Makea time-series plot and calculate the average numer of steps
-```{r}
+
+```r
 steps.interval <- aggregate(steps ~ interval, data = activity, FUN = mean)
 plot(steps.interval, type = "l")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
 2. The maximum number of steps for 5 minute interval
-```{r}
+
+```r
 steps.interval$interval[which.max(steps.interval$steps)]
+```
+
+```
+## [1] 835
 ```
 
 ## Imputing missing values
 1. Calculate and report the total number of missing values in the dataset.
-```{r}
+
+```r
 sum(is.na(activity))
+```
+
+```
+## [1] 2304
 ```
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated.
 3. Create a new dataset that is equal to the original dataset but with the missing data
 
-```{r}
+
+```r
 activity <- merge(activity, steps.interval, by = "interval", suffixes = c("", 
     ".y"))
 nas <- is.na(activity$steps)
@@ -59,18 +86,36 @@ activity <- activity[, c(1:3)]
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r}
+
+```r
 steps.data <- aggregate(steps ~ date, data = activity, FUN = sum)
 barplot(steps.date$steps, names.arg = steps.date$date, xlab = "date", ylab = "steps")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+
+```r
 mean(steps.date$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(steps.date$steps)
+```
+
+```
+## [1] 10765
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r}
+
+```r
 daytype <- function(date) {
     if (weekdays(as.Date(date)) %in% c("Saturday", "Sunday")) {
         "weekend"
@@ -83,7 +128,8 @@ activity$daytype <- as.factor(sapply(activity$date, daytype))
 
 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
-```{r}
+
+```r
 par(mfrow = c(2, 1))
 for (type in c("weekend", "weekday")) {
     steps.type <- aggregate(steps ~ interval, data = activity, subset = activity$daytype == 
@@ -91,3 +137,5 @@ for (type in c("weekend", "weekday")) {
     plot(steps.type, type = "l", main = type)
 }
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
